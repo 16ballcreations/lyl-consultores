@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proyectos | L&amp;L Ingenieros Consultores</title>
+  <meta name="description" content="Puentes, viaductos, edificaciones y estudios para licitación diseñados, revisados o rehabilitados por L&amp;L Ingenieros Consultores.">
+  <meta name="theme-color" content="#e5e5e5">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,400..800&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="assets/css/estilos.css">
+  <script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<header class="cabecera">
+  <div class="envoltura">
+    <a class="marca" href="./" aria-label="L&amp;L Ingenieros Consultores, inicio">
+      <span class="marca-sigla">L&amp;L</span>
+      <span class="marca-nombre">Londoño &amp; Londoño<span>Ingenieros consultores</span></span>
+    </a>
+    <nav class="navegacion" id="navegacion" aria-label="Principal">
+      <a href="proyectos.html" aria-current="page">Proyectos</a>
+      <a href="./#servicios">Servicios</a>
+      <a href="./#empresa">Empresa</a>
+      <a href="./#contacto">Contacto</a>
+    </nav>
+    <a class="boton boton-lleno" href="./#contacto">Solicitar propuesta</a>
+    <button class="menu-boton" type="button" aria-expanded="false" aria-controls="navegacion" aria-label="Abrir menú"><i class="ph ph-list"></i></button>
+  </div>
+</header>
+
+<main class="envoltura">
+  <div class="archivo-cabeza">
+    <h1 class="display"><span data-cifra="proyectos">74</span> proyectos</h1>
+    <div class="filtros" id="filtros" role="group" aria-label="Filtrar por servicio"></div>
+    <div class="herramientas">
+      <div class="buscar">
+        <label for="buscar">Buscar por nombre</label>
+        <input id="buscar" type="search" placeholder="Roncador, Barbosa, Quibdó..." autocomplete="off">
+      </div>
+      <div class="orden">
+        <label for="orden">Ordenar</label>
+        <select id="orden">
+          <option value="servicio">Por servicio</option>
+          <option value="longitud">Por longitud</option>
+          <option value="nombre">Por nombre</option>
+        </select>
+      </div>
+    </div>
+    <p class="mono texto-2" id="conteo" aria-live="polite" style="margin:0"></p>
+  </div>
+
+  <div class="rejilla" id="rejilla">
+    <div class="ficha esqueleto" aria-hidden="true"><div class="ficha-foto"></div></div>
+    <div class="ficha esqueleto" aria-hidden="true"><div class="ficha-foto"></div></div>
+    <div class="ficha esqueleto" aria-hidden="true"><div class="ficha-foto"></div></div>
+  </div>
+</main>
+
+<dialog class="visor" id="visor" aria-labelledby="visor-titulo">
+  <div class="visor-marco">
+    <div class="visor-cabeza">
+      <div>
+        <h2 class="titulo-l" id="visor-titulo"></h2>
+        <p id="visor-texto"></p>
+      </div>
+      <button class="redondo" type="button" data-cerrar aria-label="Cerrar"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="visor-imagen"><img id="visor-img" alt=""></div>
+    <div class="visor-pie">
+      <button class="redondo" type="button" data-paso="-1" aria-label="Foto anterior"><i class="ph ph-arrow-left"></i></button>
+      <div class="visor-miniaturas" id="visor-mini"></div>
+      <button class="redondo" type="button" data-paso="1" aria-label="Foto siguiente"><i class="ph ph-arrow-right"></i></button>
+    </div>
+  </div>
+</dialog>
+
+<footer class="pie">
+  <div class="envoltura">
+    <div class="pie-fila">
+      <span class="marca-nombre">Londoño &amp; Londoño<span>Ingenieros consultores</span></span>
+      <nav class="pie-enlaces" aria-label="Pie de página">
+        <a href="proyectos.html">Proyectos</a><a href="./#servicios">Servicios</a><a href="./#empresa">Empresa</a><a href="./#contacto">Contacto</a>
+        <a href="https://www.facebook.com/LLIngenierosConsultores" target="_blank" rel="noopener">Facebook</a>
+      </nav>
+    </div>
+    <div class="pie-sigla display" aria-hidden="true">L&amp;L</div>
+    <div class="pie-fila mono">
+      <span>Calle 32 E No. 80 A 90, Medellín, Colombia</span>
+      <span>© <span data-anio>2026</span> L&amp;L Ingenieros Consultores</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/proyectos.js"></script>
+<script src="assets/js/sitio.js"></script>
+<script src="assets/js/archivo.js"></script>
+</body>
+</html>
