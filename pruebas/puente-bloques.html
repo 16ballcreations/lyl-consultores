@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prueba: puente en bloques | L&amp;L Ingenieros Consultores</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,400..800&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+  <script>document.documentElement.classList.add('js')</script>
+  <style>
+/* ===== Puente en bloques (pb-) ===== */
+.pb {
+  --pb-lienzo: #e5e5e5;
+  --pb-fuerte: #0d0d0d; --pb-fuerte-lado: #444444; --pb-amarre: #3a3a3a;
+  --pb-tablero: #ffffff; --pb-tablero-top: #444444; --pb-tablero-lado: #979797;
+  --pb-medio: #979797; --pb-medio-top: #c6c6c6; --pb-medio-lado: #6f6f6f;
+  --pb-menta: #d1ffca; --pb-menta-top: #9ee493;
+  --pb-linea: #0d0d0d; --pb-linea-2: #6f6f6f; --pb-texto-2: #5a5a5a;
+  --pb-via: #fff100;
+  --pb-curva: cubic-bezier(.16, 1, .3, 1);
+  margin: 0; color: var(--pb-linea);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pb {
+    --pb-lienzo: #121212;
+    --pb-fuerte: #ededed; --pb-fuerte-lado: #979797; --pb-amarre: #c6c6c6;
+    --pb-tablero: #444444; --pb-tablero-top: #c6c6c6; --pb-tablero-lado: #2f2f2f;
+    --pb-medio: #2f2f2f; --pb-medio-top: #444444; --pb-medio-lado: #1e1e1e;
+    --pb-menta-top: #8fd184;
+    --pb-linea: #ededed; --pb-linea-2: #8a8a8a; --pb-texto-2: #a3a3a3;
+  }
+}
+:root[data-theme="dark"] .pb {
+  --pb-lienzo: #121212;
+  --pb-fuerte: #ededed; --pb-fuerte-lado: #979797; --pb-amarre: #c6c6c6;
+  --pb-tablero: #444444; --pb-tablero-top: #c6c6c6; --pb-tablero-lado: #2f2f2f;
+  --pb-medio: #2f2f2f; --pb-medio-top: #444444; --pb-medio-lado: #1e1e1e;
+  --pb-menta-top: #8fd184;
+  --pb-linea: #ededed; --pb-linea-2: #8a8a8a; --pb-texto-2: #a3a3a3;
+}
+.pb-escena { position: relative; aspect-ratio: 4 / 4.4; }
+.pb-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+.pb-c-fuerte { fill: var(--pb-fuerte); } .pb-c-fuerte-lado { fill: var(--pb-fuerte-lado); }
+.pb-c-amarres { fill: var(--pb-amarre); }
+.pb-c-tablero { fill: var(--pb-tablero); stroke: var(--pb-lienzo); stroke-width: 1; stroke-linejoin: round; }
+.pb-c-tablero-top { fill: var(--pb-tablero-top); stroke: var(--pb-lienzo); stroke-width: .6; }
+.pb-c-tablero-lado { fill: var(--pb-tablero-lado); }
+.pb-c-menta { fill: var(--pb-menta); stroke: var(--pb-lienzo); stroke-width: 1; }
+.pb-c-menta-top { fill: var(--pb-menta-top); stroke: var(--pb-lienzo); stroke-width: .6; }
+.pb-c-medio { fill: var(--pb-medio); } .pb-c-medio-top { fill: var(--pb-medio-top); } .pb-c-medio-lado { fill: var(--pb-medio-lado); }
+.pb-terreno { fill: none; stroke: var(--pb-linea); stroke-width: 1.4; stroke-linejoin: round; }
+.pb-rayado { fill: none; stroke: var(--pb-linea-2); stroke-width: .8; }
+.pb-oculta rect { fill: none; stroke: var(--pb-linea-2); stroke-width: .9; stroke-dasharray: 3 3; }
+.pb-eje { stroke: var(--pb-linea-2); stroke-width: .8; stroke-dasharray: 14 3 2 3; }
+.pb-cota { stroke: var(--pb-linea); stroke-width: .9; }
+.pb-ref { stroke: var(--pb-linea-2); stroke-width: .8; fill: none; }
+.pb-discontinua { stroke-dasharray: 3 3; }
+.pb-tick { stroke: var(--pb-linea); stroke-width: 1.4; fill: none; }
+.pb-burbuja { fill: var(--pb-lienzo); stroke: var(--pb-linea); stroke-width: .9; }
+.pb-nivel { fill: var(--pb-linea); }
+.pb-punto { fill: var(--pb-linea); }
+.pb-fondo-txt { fill: var(--pb-lienzo); }
+.pb-linea-via { stroke: var(--pb-via); stroke-width: 1; stroke-dasharray: 4 5; }
+.pb-planta-losa { fill: none; stroke: var(--pb-medio-top); stroke-width: 9; }
+.pb-planta-eje { fill: none; stroke: var(--pb-linea); stroke-width: .9; stroke-dasharray: 14 3 2 3; }
+.pb-t { font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10.5px; letter-spacing: -0.02em; fill: var(--pb-linea); }
+.pb-t-2 { fill: var(--pb-texto-2); }
+.pb-t-fuerte { font-size: 11.5px; }
+.pb-t-num { font-size: 10px; }
+.pb-t-chico { font-size: 8.5px; fill: var(--pb-texto-2); }
+.pb-cifra {
+  font-family: 'Archivo', 'Arial Narrow', sans-serif; font-weight: 800;
+  font-stretch: 62%; font-variation-settings: 'wdth' 62;
+  font-size: 104px; letter-spacing: -0.03em; fill: var(--pb-linea);
+}
+.pb-cifra-u { font-size: 40px; }
+.pb-espera .pb-anim { opacity: 0; }
+.pb-anim { transform-box: fill-box; }
+.pb-anim[data-a="sube"] { transform-origin: 50% 100%; }
+.pb-anim[data-a="eje"] { transform-origin: 50% 0%; }
+@media (max-width: 860px) {
+  .pb-escena { aspect-ratio: 4 / 3; }
+  .pb-t { font-size: 15px; }
+  .pb-t-fuerte { font-size: 16px; }
+  .pb-t-num { font-size: 13px; }
+  .pb-burbuja { r: 13px; }
+  .pb-movil-oculto { display: none; }
+}
+
+/* Solo para la página de prueba */
+.prueba-barra { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; color: var(--texto-2); }
+.prueba-rearmar {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; border: 0; cursor: pointer;
+  background: var(--superficie); color: var(--texto); font-family: var(--f-mono); font-size: 12px; letter-spacing: -0.02em;
+}
+.prueba-rearmar:hover { background: var(--menta); color: #0d0d0d; }
+.prueba-nota { padding-block: 0 clamp(56px, 8vw, 104px); }
+.prueba-nota .envoltura { display: grid; grid-template-columns: 1fr 2fr; gap: 24px 56px; border-top: 1px solid var(--ceniza); padding-top: 32px; }
+.prueba-nota ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; color: var(--texto-2); max-width: 70ch; }
+.prueba-nota li { padding-left: 18px; position: relative; }
+.prueba-nota li::before { content: ''; position: absolute; left: 0; top: .6em; width: 8px; height: 1px; background: var(--texto); }
+@media (max-width: 860px) { .prueba-nota .envoltura { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<header class="cabecera">
+  <div class="envoltura">
+    <a class="marca" href="../" aria-label="L&amp;L Ingenieros Consultores, inicio">
+      <span class="marca-sigla">L&amp;L</span>
+      <span class="marca-nombre">Londoño &amp; Londoño<span>Ingenieros consultores</span></span>
+    </a>
+    <span class="etiqueta">Prueba: portada con puente en bloques</span>
+  </div>
+</header>
+
+<main>
+  <section class="portada">
+    <div class="envoltura">
+      <div class="portada-texto">
+        <h1 class="display entra">Diseñamos lo que no se puede caer.</h1>
+        <p class="entrada entra entra-2">Ingeniería estructural desde Medellín: puentes, edificios, contención y patología para obras en todo el país.</p>
+        <div class="portada-acciones entra entra-3">
+          <a class="boton boton-lleno" href="../#contacto">Solicitar propuesta <i class="ph ph-arrow-right"></i></a>
+          <a class="boton boton-borde" href="../proyectos.html">Ver proyectos</a>
+        </div>
+      </div>
+      <div>
+        <!-- Fragmento para la portada: reemplaza la <figure> de .portada-foto -->
+        <figure class="pb" id="pb-puente">
+          <div class="pb-escena">
+            <svg class="pb-svg" viewBox="0 0 600 660" data-vb-desk="-6 0 612 660" data-vb-movil="0 132 600 450" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="pb-titulo pb-desc">
+  <title id="pb-titulo">Puente Alonso Sánchez, alzado esquemático en bloques</title>
+  <desc id="pb-desc">Un viaducto abstracto de 180 metros armado con bloques: zapatas, dos pilas apiladas y un tablero de dovelas que avanza en voladizos sucesivos hasta cerrarse en el centro, con cotas y ejes de dibujo técnico superpuestos.</desc>
+  <g class="pb-anim" data-a="aparece" data-d="3000"><text class="pb-t pb-t-2" x="0" y="26" text-anchor="start">LONGITUD TOTAL</text><text class="pb-cifra" x="-3" y="112">180<tspan class="pb-cifra-u" dx="6">M</tspan></text></g>
+  <line class="pb-anim pb-ref" data-a="traza" data-d="2700" x1="372" y1="34" x2="600" y2="34"/><g class="pb-anim" data-a="aparece" data-d="2700"><text class="pb-t pb-t-2" x="372" y="26" text-anchor="start">PLANTA</text><text class="pb-t pb-t-2" x="600" y="26" text-anchor="end">TRAZADO CURVO</text></g><path class="pb-anim pb-planta-losa" data-a="traza" data-d="2750" d="M396 86.6A190 190 0 0 1 572 92.9"/><path class="pb-anim pb-planta-eje" data-a="traza" data-d="2850" d="M378 96.4A190 190 0 0 1 586 101.7"/><g class="pb-anim" data-a="aparece" data-d="3100"><line class="pb-ref" x1="399.9" y1="94.7" x2="392.1" y2="78.5"/><text class="pb-t pb-t-chico" x="388.7" y="74.3" text-anchor="middle">1</text><line class="pb-ref" x1="441.8" y1="80.7" x2="438.2" y2="63"/><text class="pb-t pb-t-chico" x="436.6" y="58.2" text-anchor="middle">2</text><line class="pb-ref" x1="525.6" y1="83.4" x2="530.4" y2="66"/><text class="pb-t pb-t-chico" x="532.5" y="61.3" text-anchor="middle">3</text><line class="pb-ref" x1="567.5" y1="100.7" x2="576.5" y2="85.1"/><text class="pb-t pb-t-chico" x="580.4" y="81.1" text-anchor="middle">4</text><line class="pb-ref pb-discontinua" x1="486" y1="74.2" x2="484.1" y2="113.7"/><text class="pb-t " x="494" y="102.2" text-anchor="start">R (ESQ.)</text></g>
+  <polyline class="pb-anim pb-terreno" data-a="traza" data-d="0" points="0,277 36,277 62,294 108,362 146,470 214,470 252,500 300,540 346,548 386,520 454,520 490,442 522,332 552,292 566,277 600,277"/>
+  <path class="pb-anim pb-rayado" data-a="aparece" data-d="350" d="M9 278l-6 7M18 278l-6 7M27 278l-6 7M44.7 283.7l-6 7M53.3 289.3l-6 7M67.1 302.6l-6 7M72.2 310.1l-6 7M77.3 317.7l-6 7M82.4 325.2l-6 7M87.6 332.8l-6 7M92.7 340.3l-6 7M97.8 347.9l-6 7M102.9 355.4l-6 7M111.2 372l-6 7M114.3 381l-6 7M117.5 390l-6 7M120.7 399l-6 7M123.8 408l-6 7M127 417l-6 7M130.2 426l-6 7M133.3 435l-6 7M136.5 444l-6 7M139.7 453l-6 7M142.8 462l-6 7M155.7 471l-6 7M165.4 471l-6 7M175.1 471l-6 7M184.9 471l-6 7M194.6 471l-6 7M204.3 471l-6 7M221.6 477l-6 7M229.2 483l-6 7M236.8 489l-6 7M244.4 495l-6 7M260 507.7l-6 7M268 514.3l-6 7M276 521l-6 7M284 527.7l-6 7M292 534.3l-6 7M309.2 542.6l-6 7M318.4 544.2l-6 7M327.6 545.8l-6 7M336.8 547.4l-6 7M354 543.4l-6 7M362 537.8l-6 7M370 532.2l-6 7M378 526.6l-6 7M395.7 521l-6 7M405.4 521l-6 7M415.1 521l-6 7M424.9 521l-6 7M434.6 521l-6 7M444.3 521l-6 7M458 512.3l-6 7M462 503.7l-6 7M466 495l-6 7M470 486.3l-6 7M474 477.7l-6 7M478 469l-6 7M482 460.3l-6 7M486 451.7l-6 7M492.7 433.8l-6 7M495.3 424.7l-6 7M498 415.5l-6 7M500.7 406.3l-6 7M503.3 397.2l-6 7M506 388l-6 7M508.7 378.8l-6 7M511.3 369.7l-6 7M514 360.5l-6 7M516.7 351.3l-6 7M519.3 342.2l-6 7M528 325l-6 7M534 317l-6 7M540 309l-6 7M546 301l-6 7M559 285.5l-6 7M577.3 278l-6 7M588.7 278l-6 7"/>
+  <line class="pb-anim pb-eje" data-a="eje" data-d="2520" x1="60" y1="160" x2="60" y2="300"/><line class="pb-anim pb-eje" data-a="eje" data-d="2580" x1="180" y1="160" x2="180" y2="482"/><line class="pb-anim pb-eje" data-a="eje" data-d="2640" x1="420" y1="160" x2="420" y2="532"/><line class="pb-anim pb-eje" data-a="eje" data-d="2700" x1="540" y1="160" x2="540" y2="300"/><line class="pb-anim pb-cota" data-a="traza" data-d="2650" x1="60" y1="192" x2="540" y2="192"/><line class="pb-anim pb-cota" data-a="traza" data-d="2750" x1="60" y1="222" x2="540" y2="222"/><line class="pb-anim pb-cota" data-a="traza" data-d="2850" x1="136" y1="308" x2="136" y2="466"/><line class="pb-anim pb-ref" data-a="traza" data-d="2850" x1="131" y1="308" x2="166" y2="308"/><line class="pb-anim pb-cota" data-a="traza" data-d="2950" x1="376" y1="308" x2="376" y2="516"/><line class="pb-anim pb-ref" data-a="traza" data-d="2950" x1="371" y1="308" x2="406" y2="308"/><line class="pb-anim pb-ref" data-a="traza" data-d="2900" x1="300" y1="280" x2="300" y2="318"/>
+  <g class="pb-anim" data-a="sube" data-d="380"><polygon class="pb-c-medio-lado" points="62,275 76,266 76,291 62,300"/><rect class="pb-c-medio" x="40" y="275" width="22" height="25"/></g>
+  <g class="pb-anim" data-a="sube" data-d="430"><polygon class="pb-c-medio-lado" points="560,275 574,266 574,291 560,300"/><rect class="pb-c-medio" x="536" y="275" width="24" height="25"/></g>
+  <g class="pb-anim" data-a="sube" data-d="400"><polygon class="pb-c-medio-top" points="148,466 212,466 226,457 162,457"/><polygon class="pb-c-medio-lado" points="212,466 226,457 226,473 212,482"/><rect class="pb-c-medio" x="148" y="466" width="64" height="16"/></g><g class="pb-anim pb-oculta" data-a="aparece" data-d="250"><rect x="156" y="482" width="12" height="46"/><rect x="192" y="482" width="12" height="46"/></g><g class="pb-anim" data-a="cae" data-d="650"><polygon class="pb-c-fuerte-lado" points="192,436.4 206,427.4 206,457 192,466"/><rect class="pb-c-fuerte" x="168" y="436.4" width="24" height="29.6"/><g class="pb-c-amarres"><circle cx="174" cy="445.9" r="1.3"/><circle cx="186" cy="445.9" r="1.3"/><circle cx="174" cy="459.2" r="1.3"/><circle cx="186" cy="459.2" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="755"><polygon class="pb-c-fuerte-lado" points="192,404.8 206,395.8 206,425.4 192,434.4"/><rect class="pb-c-fuerte" x="168" y="404.8" width="24" height="29.6"/><g class="pb-c-amarres"><circle cx="174" cy="414.3" r="1.3"/><circle cx="186" cy="414.3" r="1.3"/><circle cx="174" cy="427.6" r="1.3"/><circle cx="186" cy="427.6" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="860"><polygon class="pb-c-fuerte-lado" points="192,373.2 206,364.2 206,393.8 192,402.8"/><rect class="pb-c-fuerte" x="168" y="373.2" width="24" height="29.6"/><g class="pb-c-amarres"><circle cx="174" cy="382.7" r="1.3"/><circle cx="186" cy="382.7" r="1.3"/><circle cx="174" cy="396" r="1.3"/><circle cx="186" cy="396" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="965"><polygon class="pb-c-fuerte-lado" points="192,341.6 206,332.6 206,362.2 192,371.2"/><rect class="pb-c-fuerte" x="168" y="341.6" width="24" height="29.6"/><g class="pb-c-amarres"><circle cx="174" cy="351.1" r="1.3"/><circle cx="186" cy="351.1" r="1.3"/><circle cx="174" cy="364.4" r="1.3"/><circle cx="186" cy="364.4" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="1070"><polygon class="pb-c-fuerte-lado" points="192,310 206,301 206,330.6 192,339.6"/><rect class="pb-c-fuerte" x="168" y="310" width="24" height="29.6"/><g class="pb-c-amarres"><circle cx="174" cy="319.5" r="1.3"/><circle cx="186" cy="319.5" r="1.3"/><circle cx="174" cy="332.8" r="1.3"/><circle cx="186" cy="332.8" r="1.3"/></g></g>
+  <g class="pb-anim" data-a="sube" data-d="460"><polygon class="pb-c-medio-top" points="388,516 452,516 466,507 402,507"/><polygon class="pb-c-medio-lado" points="452,516 466,507 466,523 452,532"/><rect class="pb-c-medio" x="388" y="516" width="64" height="16"/></g><g class="pb-anim pb-oculta" data-a="aparece" data-d="250"><rect x="396" y="532" width="12" height="46"/><rect x="432" y="532" width="12" height="46"/></g><g class="pb-anim" data-a="cae" data-d="650"><polygon class="pb-c-fuerte-lado" points="432,488.3 446,479.3 446,507 432,516"/><rect class="pb-c-fuerte" x="408" y="488.3" width="24" height="27.7"/><g class="pb-c-amarres"><circle cx="414" cy="497.2" r="1.3"/><circle cx="426" cy="497.2" r="1.3"/><circle cx="414" cy="509.7" r="1.3"/><circle cx="426" cy="509.7" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="755"><polygon class="pb-c-fuerte-lado" points="432,458.6 446,449.6 446,477.3 432,486.3"/><rect class="pb-c-fuerte" x="408" y="458.6" width="24" height="27.7"/><g class="pb-c-amarres"><circle cx="414" cy="467.5" r="1.3"/><circle cx="426" cy="467.5" r="1.3"/><circle cx="414" cy="480" r="1.3"/><circle cx="426" cy="480" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="860"><polygon class="pb-c-fuerte-lado" points="432,428.9 446,419.9 446,447.6 432,456.6"/><rect class="pb-c-fuerte" x="408" y="428.9" width="24" height="27.7"/><g class="pb-c-amarres"><circle cx="414" cy="437.8" r="1.3"/><circle cx="426" cy="437.8" r="1.3"/><circle cx="414" cy="450.3" r="1.3"/><circle cx="426" cy="450.3" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="965"><polygon class="pb-c-fuerte-lado" points="432,399.1 446,390.1 446,417.9 432,426.9"/><rect class="pb-c-fuerte" x="408" y="399.1" width="24" height="27.7"/><g class="pb-c-amarres"><circle cx="414" cy="408.1" r="1.3"/><circle cx="426" cy="408.1" r="1.3"/><circle cx="414" cy="420.5" r="1.3"/><circle cx="426" cy="420.5" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="1070"><polygon class="pb-c-fuerte-lado" points="432,369.4 446,360.4 446,388.1 432,397.1"/><rect class="pb-c-fuerte" x="408" y="369.4" width="24" height="27.7"/><g class="pb-c-amarres"><circle cx="414" cy="378.3" r="1.3"/><circle cx="426" cy="378.3" r="1.3"/><circle cx="414" cy="390.8" r="1.3"/><circle cx="426" cy="390.8" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="1175"><polygon class="pb-c-fuerte-lado" points="432,339.7 446,330.7 446,358.4 432,367.4"/><rect class="pb-c-fuerte" x="408" y="339.7" width="24" height="27.7"/><g class="pb-c-amarres"><circle cx="414" cy="348.6" r="1.3"/><circle cx="426" cy="348.6" r="1.3"/><circle cx="414" cy="361.1" r="1.3"/><circle cx="426" cy="361.1" r="1.3"/></g></g><g class="pb-anim" data-a="cae" data-d="1280"><polygon class="pb-c-fuerte-lado" points="432,310 446,301 446,328.7 432,337.7"/><rect class="pb-c-fuerte" x="408" y="310" width="24" height="27.7"/><g class="pb-c-amarres"><circle cx="414" cy="318.9" r="1.3"/><circle cx="426" cy="318.9" r="1.3"/><circle cx="414" cy="331.4" r="1.3"/><circle cx="426" cy="331.4" r="1.3"/></g></g>
+  <g class="pb-anim" data-a="aparece" data-d="2280"><polygon class="pb-c-tablero-top" points="60,262 70,262 84,253 74,253"/><polygon class="pb-c-tablero" points="60,262 70,262 70,275.2 60,275"/></g>
+  <g class="pb-anim" data-a="izq" data-d="2080"><polygon class="pb-c-tablero-top" points="70,262 90,262 104,253 84,253"/><polygon class="pb-c-tablero" points="70,262 90,262 90,277.1 70,275.2"/></g>
+  <g class="pb-anim" data-a="izq" data-d="1950"><polygon class="pb-c-tablero-top" points="90,262 110,262 124,253 104,253"/><polygon class="pb-c-tablero" points="90,262 110,262 110,280.7 90,277.1"/></g>
+  <g class="pb-anim" data-a="izq" data-d="1820"><polygon class="pb-c-tablero-top" points="110,262 130,262 144,253 124,253"/><polygon class="pb-c-tablero" points="110,262 130,262 130,286.2 110,280.7"/></g>
+  <g class="pb-anim" data-a="izq" data-d="1690"><polygon class="pb-c-tablero-top" points="130,262 150,262 164,253 144,253"/><polygon class="pb-c-tablero" points="130,262 150,262 150,293.6 130,286.2"/></g>
+  <g class="pb-anim" data-a="izq" data-d="1560"><polygon class="pb-c-tablero-top" points="150,262 170,262 184,253 164,253"/><polygon class="pb-c-tablero" points="150,262 170,262 170,302.7 150,293.6"/></g>
+  <g class="pb-anim" data-a="cae" data-d="1420"><polygon class="pb-c-tablero-top" points="170,262 190,262 204,253 184,253"/><polygon class="pb-c-tablero" points="170,262 190,262 190,302.7 170,302.7"/></g>
+  <g class="pb-anim" data-a="der" data-d="1560"><polygon class="pb-c-tablero-top" points="190,262 210,262 224,253 204,253"/><polygon class="pb-c-tablero" points="190,262 210,262 210,293.6 190,302.7"/></g>
+  <g class="pb-anim" data-a="der" data-d="1690"><polygon class="pb-c-tablero-top" points="210,262 230,262 244,253 224,253"/><polygon class="pb-c-tablero" points="210,262 230,262 230,286.2 210,293.6"/></g>
+  <g class="pb-anim" data-a="der" data-d="1820"><polygon class="pb-c-tablero-top" points="230,262 250,262 264,253 244,253"/><polygon class="pb-c-tablero" points="230,262 250,262 250,280.7 230,286.2"/></g>
+  <g class="pb-anim" data-a="der" data-d="1950"><polygon class="pb-c-tablero-top" points="250,262 270,262 284,253 264,253"/><polygon class="pb-c-tablero" points="250,262 270,262 270,277.1 250,280.7"/></g>
+  <g class="pb-anim" data-a="der" data-d="2080"><polygon class="pb-c-tablero-top" points="270,262 290,262 304,253 284,253"/><polygon class="pb-c-tablero" points="270,262 290,262 290,275.2 270,277.1"/></g>
+  <g class="pb-anim" data-a="llave" data-d="2330"><polygon class="pb-c-menta-top" points="290,262 310,262 324,253 304,253"/><polygon class="pb-c-menta" points="290,262 310,262 310,275.2 290,275.2"/></g>
+  <g class="pb-anim" data-a="izq" data-d="2080"><polygon class="pb-c-tablero-top" points="310,262 330,262 344,253 324,253"/><polygon class="pb-c-tablero" points="310,262 330,262 330,277.1 310,275.2"/></g>
+  <g class="pb-anim" data-a="izq" data-d="1950"><polygon class="pb-c-tablero-top" points="330,262 350,262 364,253 344,253"/><polygon class="pb-c-tablero" points="330,262 350,262 350,280.7 330,277.1"/></g>
+  <g class="pb-anim" data-a="izq" data-d="1820"><polygon class="pb-c-tablero-top" points="350,262 370,262 384,253 364,253"/><polygon class="pb-c-tablero" points="350,262 370,262 370,286.2 350,280.7"/></g>
+  <g class="pb-anim" data-a="izq" data-d="1690"><polygon class="pb-c-tablero-top" points="370,262 390,262 404,253 384,253"/><polygon class="pb-c-tablero" points="370,262 390,262 390,293.6 370,286.2"/></g>
+  <g class="pb-anim" data-a="izq" data-d="1560"><polygon class="pb-c-tablero-top" points="390,262 410,262 424,253 404,253"/><polygon class="pb-c-tablero" points="390,262 410,262 410,302.7 390,293.6"/></g>
+  <g class="pb-anim" data-a="cae" data-d="1420"><polygon class="pb-c-tablero-top" points="410,262 430,262 444,253 424,253"/><polygon class="pb-c-tablero" points="410,262 430,262 430,302.7 410,302.7"/></g>
+  <g class="pb-anim" data-a="der" data-d="1560"><polygon class="pb-c-tablero-top" points="430,262 450,262 464,253 444,253"/><polygon class="pb-c-tablero" points="430,262 450,262 450,293.6 430,302.7"/></g>
+  <g class="pb-anim" data-a="der" data-d="1690"><polygon class="pb-c-tablero-top" points="450,262 470,262 484,253 464,253"/><polygon class="pb-c-tablero" points="450,262 470,262 470,286.2 450,293.6"/></g>
+  <g class="pb-anim" data-a="der" data-d="1820"><polygon class="pb-c-tablero-top" points="470,262 490,262 504,253 484,253"/><polygon class="pb-c-tablero" points="470,262 490,262 490,280.7 470,286.2"/></g>
+  <g class="pb-anim" data-a="der" data-d="1950"><polygon class="pb-c-tablero-top" points="490,262 510,262 524,253 504,253"/><polygon class="pb-c-tablero" points="490,262 510,262 510,277.1 490,280.7"/></g>
+  <g class="pb-anim" data-a="der" data-d="2080"><polygon class="pb-c-tablero-top" points="510,262 530,262 544,253 524,253"/><polygon class="pb-c-tablero" points="510,262 530,262 530,275.2 510,277.1"/></g>
+  <g class="pb-anim" data-a="aparece" data-d="2280"><polygon class="pb-c-tablero-top" points="530,262 540,262 554,253 544,253"/><polygon class="pb-c-tablero-lado" points="540,262 554,253 554,266 540,275"/><polygon class="pb-c-tablero" points="530,262 540,262 540,275 530,275.2"/></g>
+  <line class="pb-anim pb-linea-via" data-a="aparece" data-d="2600" x1="67" y1="257.5" x2="547" y2="257.5"/>
+  <g class="pb-anim" data-a="aparece" data-d="2600"><circle class="pb-burbuja" cx="60" cy="148" r="10"/><text class="pb-t pb-t-num" x="60" y="152" text-anchor="middle">1</text></g><g class="pb-anim" data-a="aparece" data-d="2670"><circle class="pb-burbuja" cx="180" cy="148" r="10"/><text class="pb-t pb-t-num" x="180" y="152" text-anchor="middle">2</text></g><g class="pb-anim" data-a="aparece" data-d="2740"><circle class="pb-burbuja" cx="420" cy="148" r="10"/><text class="pb-t pb-t-num" x="420" y="152" text-anchor="middle">3</text></g><g class="pb-anim" data-a="aparece" data-d="2810"><circle class="pb-burbuja" cx="540" cy="148" r="10"/><text class="pb-t pb-t-num" x="540" y="152" text-anchor="middle">4</text></g><g class="pb-anim" data-a="aparece" data-d="2600"><text class="pb-t pb-t-2" x="24" y="152" text-anchor="start">EJE</text></g><g class="pb-anim" data-a="aparece" data-d="2950"><path class="pb-tick" d="M56 196L64 188"/><path class="pb-tick" d="M536 196L544 188"/><rect class="pb-fondo-txt" x="258" y="178" width="84" height="16"/><text class="pb-t pb-t-fuerte" x="300" y="190" text-anchor="middle">L = 180 m</text></g><g class="pb-anim" data-a="aparece" data-d="3050"><path class="pb-tick" d="M56 226L64 218"/><path class="pb-tick" d="M176 226L184 218"/><path class="pb-tick" d="M416 226L424 218"/><path class="pb-tick" d="M536 226L544 218"/><text class="pb-t " x="120" y="216" text-anchor="middle">VANO 1</text><text class="pb-t " x="300" y="216" text-anchor="middle">VANO 2</text><text class="pb-t " x="480" y="216" text-anchor="middle">VANO 3</text></g><g class="pb-anim" data-a="aparece" data-d="3150"><path class="pb-tick" d="M132 312L140 304"/><path class="pb-tick" d="M132 470L140 462"/><text class="pb-t" transform="translate(130 387) rotate(-90)" text-anchor="middle">H1 = VAR.</text><text class="pb-t pb-t-2" x="212" y="458" text-anchor="start">PILA P1</text></g><g class="pb-anim" data-a="aparece" data-d="3250"><path class="pb-tick" d="M372 312L380 304"/><path class="pb-tick" d="M372 520L380 512"/><text class="pb-t" transform="translate(370 412) rotate(-90)" text-anchor="middle">H2 = VAR.</text><text class="pb-t pb-t-2" x="452" y="508" text-anchor="start">PILA P2</text></g><g class="pb-anim" data-a="aparece" data-d="3200"><path class="pb-nivel" d="M572 262l-5 -7h10z"/><line class="pb-ref" x1="560" y1="262" x2="598" y2="262"/><text class="pb-t " x="598" y="250" text-anchor="end">N+0.00</text></g><g class="pb-anim" data-a="aparece" data-d="3300"><path class="pb-nivel" d="M346 548l-5 -7h10z"/><text class="pb-t pb-t-2" x="346" y="566" text-anchor="middle">FONDO DE CAÑADA</text></g><g class="pb-anim" data-a="aparece" data-d="3250"><circle class="pb-punto" cx="300" cy="270" r="2"/><text class="pb-t " x="300" y="332" text-anchor="middle">DOVELA DE CIERRE</text><text class="pb-t pb-t-2" x="300" y="346" text-anchor="middle">VOLADIZOS SUCESIVOS</text></g>
+  <g class="pb-anim pb-cajetin" data-a="aparece" data-d="3350"><line class="pb-ref" x1="0" y1="606" x2="600" y2="606"/><text class="pb-t pb-t-fuerte" x="0" y="626" text-anchor="start">PUENTE ALONSO SÁNCHEZ</text><text class="pb-t pb-t-2" x="0" y="642" text-anchor="start">ALZADO ESQUEMÁTICO, SIN ESCALA</text><text class="pb-t " x="600" y="626" text-anchor="end">L = 180 m, DATO REAL</text><text class="pb-t pb-t-2" x="600" y="642" text-anchor="end">EJES, VANOS, H Y R: ESQUEMÁTICOS</text></g>
+</svg>
+          </div>
+          <figcaption class="portada-pie mono"><span>Puente Alonso Sánchez</span><span>Diseño estructural, 180 m</span></figcaption>
+        </figure>
+        <!-- Fin del fragmento -->
+        <div class="prueba-barra mono">
+          <span>Se arma al entrar en pantalla</span>
+          <button class="prueba-rearmar" type="button" data-pb-rearmar aria-controls="pb-puente"><i class="ph ph-arrow-counter-clockwise"></i> Rearmar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="prueba-nota">
+    <div class="envoltura">
+      <h2 class="titulo-m">Por qué así</h2>
+      <ul>
+        <li>La foto se cambia por un objeto: un viaducto de bloques planos que se apoya en el lienzo como en la referencia, sin sombras ni degradados.</li>
+        <li>Se arma como se construye este tipo de puente: zapatas, pilas apiladas bloque a bloque y dovelas en voladizos sucesivos desde cada pila hasta cerrar en el centro.</li>
+        <li>La dovela de cierre es el único elemento en menta: es la pieza que vuelve estable todo el conjunto.</li>
+        <li>Encima va el dibujo técnico: ejes, cotas con trazo de 45 grados, niveles y una planta que recuerda el trazado curvo del puente real.</li>
+        <li>Solo L = 180 m es un dato publicado. Vanos, alturas H1 y H2 y el radio R se nombran sin cifras, como esquema.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const curva = 'cubic-bezier(.16, 1, .3, 1)';
+  const reducido = matchMedia('(prefers-reduced-motion: reduce)');
+  const movil = matchMedia('(max-width: 860px)');
+  document.querySelectorAll('.pb').forEach(fig => {
+    const svg = fig.querySelector('.pb-svg');
+    const vista = () => svg.setAttribute('viewBox', movil.matches ? svg.dataset.vbMovil : svg.dataset.vbDesk);
+    vista(); movil.addEventListener('change', vista);
+    const piezas = [...svg.querySelectorAll('.pb-anim')];
+    let activas = [];
+    const keyframes = {
+      sube:   [{ transform: 'scaleY(0)', opacity: 1 }, { transform: 'scaleY(1)', opacity: 1 }],
+      cae:    [{ transform: 'translateY(-26px)', opacity: 0 }, { transform: 'none', opacity: 1 }],
+      llave:  [{ transform: 'translateY(-64px)', opacity: 0, offset: 0 }, { opacity: 1, offset: .25 }, { transform: 'none', opacity: 1 }],
+      izq:    [{ transform: 'translateX(16px)', opacity: 0 }, { transform: 'none', opacity: 1 }],
+      der:    [{ transform: 'translateX(-16px)', opacity: 0 }, { transform: 'none', opacity: 1 }],
+      eje:    [{ transform: 'scaleY(0)', opacity: 1 }, { transform: 'scaleY(1)', opacity: 1 }],
+      aparece:[{ opacity: 0 }, { opacity: 1 }]
+    };
+    const duracion = { sube: 600, cae: 560, llave: 900, izq: 520, der: 520, eje: 700, aparece: 600, traza: 800 };
+    function armar() {
+      activas.forEach(a => a.cancel()); activas = [];
+      fig.classList.remove('pb-espera');
+      if (reducido.matches) return;
+      piezas.forEach(el => {
+        const tipo = el.dataset.a, delay = +el.dataset.d || 0;
+        if (tipo === 'traza') {
+          const L = Math.ceil(el.getTotalLength());
+          el.style.strokeDasharray = L;
+          activas.push(el.animate([{ strokeDashoffset: L, opacity: 1 }, { strokeDashoffset: 0, opacity: 1 }],
+            { duration: duracion.traza, delay, easing: curva, fill: 'both' }));
+        } else {
+          activas.push(el.animate(keyframes[tipo], { duration: duracion[tipo], delay, easing: curva, fill: 'both' }));
+        }
+      });
+    }
+    fig.armar = armar;
+    if (reducido.matches || !('IntersectionObserver' in window)) return;
+    fig.classList.add('pb-espera');
+    const io = new IntersectionObserver(ents => {
+      if (ents.some(e => e.isIntersecting)) { io.disconnect(); armar(); }
+    }, { threshold: .35 });
+    io.observe(fig);
+  });
+  document.querySelectorAll('[data-pb-rearmar]').forEach(b => b.addEventListener('click', () => {
+    const fig = document.getElementById(b.getAttribute('aria-controls')); if (fig && fig.armar) fig.armar();
+  }));
+})();
+</script>
+</body>
+</html>
